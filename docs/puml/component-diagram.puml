@@ -1,0 +1,28 @@
+@startuml component-diagram
+!theme plain
+
+package "Java Application" {
+  [Main] as main
+  
+  package "Modules" {
+    [Calculator] as calc
+    [FileHandler] as file
+  }
+  
+  package "Utils" {
+    [DateUtils] as date
+    [StringUtils] as string
+  }
+  
+  package "Models" {
+    [DateModel] as dateModel
+  }
+}
+
+main --> calc : uses
+main --> file : uses
+main --> date : uses
+main --> string : uses
+date --> dateModel : uses
+
+@enduml

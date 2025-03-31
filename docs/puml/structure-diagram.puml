@@ -1,0 +1,63 @@
+@startuml structure-diagram
+!theme plain
+
+package "com.app" {
+  class Main {
+    + main(String[] args): void
+  }
+  
+  package "modules" {
+    class Calculator {
+      + MAX_VALUE: BigDecimal
+      + MIN_VALUE: BigDecimal
+      + add(BigDecimal num1, BigDecimal num2): BigDecimal
+    }
+    
+    class FileHandler {
+      + FILE_STATUS_OK: int
+      + FILE_STATUS_ERROR: int
+      + FILE_STATUS_NONAME: int
+      + writeToFile(String filename, String content): int
+      + fileExists(String filename): boolean
+    }
+  }
+  
+  package "utils" {
+    class DateUtils {
+      + formatDate(DateModel dateModel): String
+      + getCurrentDate(): DateModel
+      + parseDate(String dateString): DateModel
+    }
+    
+    class StringUtils {
+      + MAX_STRING_LENGTH: int
+      + DEFAULT_PADDING: char
+      + generateGreeting(String username): String
+      + pad(String input, int length, boolean padLeft): String
+      + pad(String input, int length, char padChar, boolean padLeft): String
+    }
+  }
+  
+  package "model" {
+    class DateModel {
+      - year: int
+      - month: int
+      - day: int
+      + getYear(): int
+      + setYear(int year): void
+      + getMonth(): int
+      + setMonth(int month): void
+      + getDay(): int
+      + setDay(int day): void
+      + toLocalDate(): LocalDate
+    }
+  }
+}
+
+Main --> Calculator
+Main --> FileHandler
+Main --> DateUtils
+Main --> StringUtils
+DateUtils --> DateModel
+
+@enduml

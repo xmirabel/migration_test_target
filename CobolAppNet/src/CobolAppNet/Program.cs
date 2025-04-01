@@ -15,6 +15,7 @@ namespace CobolApp.Net
         {
             builder.AddConsole();
             builder.AddDebug();
+            builder.SetMinimumLevel(LogLevel.Information);
         });
 
         private static readonly ILogger Logger = LoggerFactory.CreateLogger<Program>();
@@ -48,12 +49,12 @@ namespace CobolApp.Net
                 // Validate against Calculator constants
                 if (num1 > Calculator.MaxValue)
                 {
-                    Console.WriteLine($"Valeur trop grande, limitée à {Calculator.MaxValue}");
+                    Console.WriteLine($"Valeur trop grande, limitï¿½e ï¿½ {Calculator.MaxValue}");
                     num1 = Calculator.MaxValue;
                 }
                 else if (num1 < Calculator.MinValue)
                 {
-                    Console.WriteLine($"Valeur trop petite, limitée à {Calculator.MinValue}");
+                    Console.WriteLine($"Valeur trop petite, limitï¿½e ï¿½ {Calculator.MinValue}");
                     num1 = Calculator.MinValue;
                 }
             }
@@ -63,7 +64,7 @@ namespace CobolApp.Net
                 num1 = 0;
             }
 
-            Console.WriteLine("Entrez le deuxième nombre:");
+            Console.WriteLine("Entrez le deuxiï¿½me nombre:");
             decimal num2;
             try
             {
@@ -76,12 +77,12 @@ namespace CobolApp.Net
                 // Validate against Calculator constants
                 if (num2 > Calculator.MaxValue)
                 {
-                    Console.WriteLine($"Valeur trop grande, limitée à {Calculator.MaxValue}");
+                    Console.WriteLine($"Valeur trop grande, limitï¿½e ï¿½ {Calculator.MaxValue}");
                     num2 = Calculator.MaxValue;
                 }
                 else if (num2 < Calculator.MinValue)
                 {
-                    Console.WriteLine($"Valeur trop petite, limitée à {Calculator.MinValue}");
+                    Console.WriteLine($"Valeur trop petite, limitï¿½e ï¿½ {Calculator.MinValue}");
                     num2 = Calculator.MinValue;
                 }
             }
@@ -92,17 +93,17 @@ namespace CobolApp.Net
             }
 
             decimal result = Calculator.Add(num1, num2);
-            Console.WriteLine($"Résultat de l'addition: {result}");
+            Console.WriteLine($"Rï¿½sultat de l'addition: {result}");
 
             // File handler demonstration - equivalent to COBOL FILE_HANDLER call
             string filename = "output.txt";
-            string fileContent = $"Résultat du calcul: {result}";
+            string fileContent = $"Rï¿½sultat du calcul: {result}";
 
             int fileStatus = FileHandler.WriteToFile(filename, fileContent);
 
             if (fileStatus == FileHandler.FileStatusOk)
             {
-                Console.WriteLine($"Le résultat a été enregistré dans {filename}");
+                Console.WriteLine($"Le rï¿½sultat a ï¿½tï¿½ enregistrï¿½ dans {filename}");
                 Logger.LogInformation("Result successfully written to file: {Filename}", filename);
             }
             else if (fileStatus == FileHandler.FileStatusNoname)

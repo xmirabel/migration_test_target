@@ -6,3 +6,6 @@
 /CobolAppNet/.vs
 /CobolAppNet/src/CobolAppNet/obj
 /CobolAppNet/src/CobolAppNet.Tests/obj
+/CobolAppNet/src/CobolAppNet.Tests/bin/Debug/net8.0
+/CobolAppNet/src/CobolAppNet/bin/Debug/net9.0
+/CobolAppNet/src/CobolAppNet.Tests/bin/Debug/net9.0

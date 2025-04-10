@@ -1,0 +1,58 @@
+@startuml DetectTolFailure Sequence
+
+title Séquence de la méthode DetectTolFailure
+
+participant "EquipmentProcessingService" as EPS
+participant "IIoService" as IO
+participant "ILogService" as Log
+
+activate EPS
+
+EPS -> EPS : _currentSection = "DetectTolFailure"
+
+alt !_systemOptions.IsVoluntaryTrip && !_systemOptions.IsEstimateTrip
+    EPS --> EPS : return
+end
+
+EPS -> EPS : Initialize _equipMovementHistory
+EPS -> EPS : _equipMovementHistory.UserRoad = _systemOptions.UserRoad
+EPS -> EPS : _equipMovementHistory.TripControlNumber = _cycleHeader.TripControlNumber
+EPS -> EPS : _d95TripControlNumber = _cycleHeader.TripControlNumber
+
+EPS -> EPS : _fileStatus = string.Empty
+EPS -> EPS : _ioCommand = DbIoGlossary.IoCommands.ReadNext
+EPS -> EPS : PerformDatabaseIO(EquipmentMovementHistoryFile)
+activate EPS
+EPS -> IO : ReadNextEquipmentMovementHistory()
+IO --> EPS : equipMovementHistory
+deactivate EPS
+
+alt !string.IsNullOrEmpty(_cycleHeader.ReclaimCodeExt) && _cycleHeader.IsReload
+    loop !_isEndOfFile && _equipMovementHistory.TripControlNumber == _d95TripControlNumber && !(_equipMovementHistory.IsTolRule5Receivable && _equipMovementHistory.IsDelivery)
+        EPS -> EPS : PerformDatabaseIO(EquipmentMovementHistoryFile)
+        activate EPS
+        EPS -> IO : ReadNextEquipmentMovementHistory()
+        IO --> EPS : equipMovementHistory
+        deactivate EPS
+    end
+else
+    loop !_isEndOfFile && _equipMovementHistory.TripControlNumber == _d95TripControlNumber && !_equipMovementHistory.IsTolRule5Receivable
+        EPS -> EPS : PerformDatabaseIO(EquipmentMovementHistoryFile)
+        activate EPS
+        EPS -> IO : ReadNextEquipmentMovementHistory()
+        IO --> EPS : equipMovementHistory
+        deactivate EPS
+    end
+end
+
+alt _isEndOfFile || _equipMovementHistory.TripControlNumber != _d95TripControlNumber
+    EPS -> EPS : HandleTolFailure()
+    activate EPS
+    EPS -> Log : LogWarning("TOL failure detected for trip " + _d95TripControlNumber)
+    Log --> EPS
+    deactivate EPS
+end
+
+deactivate EPS
+
+@enduml

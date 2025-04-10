@@ -1,0 +1,34 @@
+@startuml Component Diagram
+
+title Diagramme de Composants - Système de Traitement des Équipements
+
+package "ChargingProcessingSystem" {
+  [EquipmentProcessingService] as EPS
+  [IoService] as IO
+  [UtilityService] as Util
+  [LogService] as Log
+  
+  interface "IIoService" as IIO
+  interface "IUtilityService" as IUtil
+  interface "ILogService" as ILog
+  
+  database "Database" {
+    [CycleHeaderFile]
+    [ReclaimMasterFile]
+    [EquipmentMovementHistoryFile]
+  }
+}
+
+EPS ..> IIO : utilise
+EPS ..> IUtil : utilise
+EPS ..> ILog : utilise
+
+IO -|> IIO : implémente
+Util -|> IUtil : implémente
+Log -|> ILog : implémente
+
+IO --> CycleHeaderFile : accède
+IO --> ReclaimMasterFile : accède
+IO --> EquipmentMovementHistoryFile : accède
+
+@enduml

@@ -1,0 +1,210 @@
+@startuml Class Diagram
+
+title Diagramme de Classes - Système de Traitement des Équipements
+
+class EquipmentProcessingService {
+  -_savedEquipmentInitNumber: string
+  -_savedReclaimCode: string
+  -_savedTripControlNumber: int
+  -_fileStatus: string
+  -_ioCommand: string
+  -_isEndOfFile: bool
+  -_currentSection: string
+  -_abortComment: string
+  +EquipmentProcessingService(ioService: IIoService, utilityService: IUtilityService, logService: ILogService)
+  +ProcessEquipment(phase: string): void
+  -PerformHousekeeping(): void
+  -ProcessingLoop(): void
+  -GetReclaimInfo(): void
+  -ReadReclaimMaster(): void
+  -DetectTolFailure(): void
+  -HandleTolFailure(): void
+  -PerformDatabaseIO(fileType: string): void
+  -PerformCycleHeaderIO(): void
+  -PerformReclaimMasterIO(): void
+  -PerformEquipmentMovementHistoryIO(): void
+  -OpenFiles(): void
+  -CloseFiles(): void
+  -InitializeDataStructures(): void
+  -AbortProcessing(): void
+}
+
+class GeneralGlossary {
+  +{static} Yes: string = "Y"
+  +{static} No: string = "N"
+  +{static} IndicatorOn: byte = 1
+  +{static} IndicatorOff: byte = 0
+}
+
+class ScreenStatus {
+  +{static} F3: string = "F3 "
+  +{static} F12: string = "F12"
+}
+
+class LogicalViews {
+  +{static} L01: string = "L01"
+  +{static} L02: string = "L02"
+  +{static} L03: string = "L03"
+  +{static} L04: string = "L04"
+}
+
+class DbIoGlossary {
+}
+
+class IoCommands {
+  +{static} Read: string = "R  "
+  +{static} ReadFirst: string = "RF "
+  +{static} ReadLast: string = "RL "
+  +{static} ReadNext: string = "RN "
+  +{static} ReadPrevious: string = "RP "
+  +{static} Add: string = "A  "
+  +{static} Update: string = "U  "
+  +{static} Delete: string = "D  "
+  +{static} OpenIO: string = "OIO"
+  +{static} OpenInput: string = "OI "
+  +{static} Close: string = "C  "
+  +{static} ReadSeries: string = "RS "
+  +{static} ReadLocked: string = "RK "
+  +{static} ReadNextLocked: string = "RNK"
+}
+
+class FileStatus {
+  +{static} NoIO: string = "  "
+  +{static} StatusOk: string = "00"
+  +{static} EndOfFile: string = "10"
+  +{static} NotFound: string = "23"
+}
+
+class ReturnStatus {
+  +{static} Normal: int = 0
+  +{static} BadCommand: int = 1
+  +{static} BadClose: int = 2
+  +{static} BadSegmentId: int = 3
+  +{static} IoFailure: int = 4
+  +{static} FileNotOpen: int = 5
+  +{static} NoIO: int = 99
+}
+
+class SwitchValues {
+  +{static} Open: string = "O"
+  +{static} Close: string = "C"
+}
+
+class SystemOptions {
+  +UserRoad: string
+  +BeginCycleControlNumber: string
+  +ServiceMonth: string
+  +DisplayServiceMonth: string
+  +ModsEffectiveMonth: string
+  +AbortedInProgram: string
+  +AbortReason: string
+  +IsTolParticipant: bool
+  +IsVoluntaryTrip: bool
+  +IsEstimateTrip: bool
+  +Phase: string
+}
+
+class CycleHeader {
+  +UserRoad: string
+  +CycleControlNumber: string
+  +TripControlNumber: int
+  +ReclaimCode: string
+  +ReclaimCodeExt: string
+  +IsReload: bool
+}
+
+class EquipmentMovementHistory {
+  +UserRoad: string
+  +TripControlNumber: int
+  +IsTolRule5Receivable: bool
+  +IsDelivery: bool
+}
+
+class EquipmentMovementEvent {
+  +UserRoad: string
+  +EventId: int
+  +EventDate: DateTime
+  +EventType: string
+  +LocationCode: string
+}
+
+class ReclaimMaster {
+  +UserRoad: string
+  +ReclaimCode: string
+  +ReclaimCodeExt: string
+  +EffectiveMonth: string
+  +ExpireMonth: string
+  +ReclaimRate: decimal
+  +ReclaimDescription: string
+}
+
+class TripInfo {
+  +UserRoad: string
+  +TripControlNumber: int
+  +TripDate: DateTime
+  +OriginLocation: string
+  +DestinationLocation: string
+}
+
+class ProcessError {
+  +UserRoad: string
+  +BeginCycleControlNumber: string
+  +ServiceMonth: string
+  +DisplayServiceMonth: string
+  +ErrorCode: string
+  +ErrorDescription: string
+}
+
+interface IIoService {
+  +GetSystemOptions(): SystemOptions
+  +UpdateSystemOptions(options: SystemOptions): void
+  +OpenCycleHeaderFile(userRoad: string): void
+  +OpenReclaimMasterFile(userRoad: string): void
+  +OpenEquipmentMovementHistoryFile(userRoad: string): void
+  +CloseCycleHeaderFile(): void
+  +CloseReclaimMasterFile(): void
+  +CloseEquipmentMovementHistoryFile(): void
+  +ReadCycleHeader(userRoad: string, cycleControlNumber: string): CycleHeader
+  +ReadNextCycleHeader(userRoad: string): CycleHeader
+  +ReadReclaimMaster(userRoad: string, reclaimCode: string, reclaimCodeExt: string): ReclaimMaster
+  +ReadNextReclaimMaster(userRoad: string): ReclaimMaster
+  +ReadEquipmentMovementHistory(userRoad: string, tripControlNumber: int): EquipmentMovementHistory
+  +ReadNextEquipmentMovementHistory(userRoad: string, tripControlNumber: int): EquipmentMovementHistory
+}
+
+interface IUtilityService {
+  +SetRetrieveHistorical(): void
+  +SetRetrieveCurrent(): void
+  +ClearErrors(): void
+  +InitializeProcessing(options: SystemOptions): void
+  +ProcessReclaimSecondary(): void
+  +ProcessReclaimFifth(): void
+  +InitializeTextProcessing(header: CycleHeader, master: ReclaimMaster, options: SystemOptions): void
+}
+
+interface ILogService {
+  +LogInfo(message: string): void
+  +LogWarning(message: string): void
+  +LogError(message: string): void
+}
+
+EquipmentProcessingService --> IIoService : utilise
+EquipmentProcessingService --> IUtilityService : utilise
+EquipmentProcessingService --> ILogService : utilise
+
+EquipmentProcessingService --> SystemOptions : utilise
+EquipmentProcessingService --> CycleHeader : utilise
+EquipmentProcessingService --> ReclaimMaster : utilise
+EquipmentProcessingService --> EquipmentMovementHistory : utilise
+EquipmentProcessingService --> EquipmentMovementEvent : utilise
+EquipmentProcessingService --> TripInfo : utilise
+EquipmentProcessingService --> ProcessError : utilise
+
+GeneralGlossary --> ScreenStatus : contient
+GeneralGlossary --> LogicalViews : contient
+DbIoGlossary --> IoCommands : contient
+DbIoGlossary --> FileStatus : contient
+DbIoGlossary --> ReturnStatus : contient
+DbIoGlossary --> SwitchValues : contient
+
+@enduml

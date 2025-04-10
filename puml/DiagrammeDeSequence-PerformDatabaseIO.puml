@@ -1,0 +1,101 @@
+@startuml PerformDatabaseIO Sequence
+
+title Séquence de la méthode PerformDatabaseIO
+
+participant "EquipmentProcessingService" as EPS
+participant "IIoService" as IO
+participant "ILogService" as Log
+
+activate EPS
+
+alt fileType == CycleHeaderFile
+    EPS -> EPS : PerformCycleHeaderIO()
+    activate EPS
+    
+    alt _ioCommand == DbIoGlossary.IoCommands.Read
+        EPS -> IO : ReadCycleHeader(_cycleHeader.UserRoad, _cycleHeader.CycleControlNumber)
+        activate IO
+        IO --> EPS : cycleHeader
+        deactivate IO
+        EPS -> EPS : _isEndOfFile = (cycleHeader == null)
+        EPS -> EPS : _fileStatus = _isEndOfFile ? DbIoGlossary.FileStatus.EndOfFile : DbIoGlossary.FileStatus.StatusOk
+    else _ioCommand == DbIoGlossary.IoCommands.ReadNext
+        EPS -> IO : ReadNextCycleHeader(_cycleHeader.UserRoad)
+        activate IO
+        IO --> EPS : cycleHeader
+        deactivate IO
+        EPS -> EPS : _isEndOfFile = (cycleHeader == null)
+        EPS -> EPS : _fileStatus = _isEndOfFile ? DbIoGlossary.FileStatus.EndOfFile : DbIoGlossary.FileStatus.StatusOk
+    else
+        EPS -> Log : LogWarning("Unsupported I/O command for Cycle Header: " + _ioCommand)
+        activate Log
+        Log --> EPS
+        deactivate Log
+        EPS -> EPS : _fileStatus = DbIoGlossary.FileStatus.NotFound
+    end
+    
+    deactivate EPS
+    
+else fileType == ReclaimMasterFile
+    EPS -> EPS : PerformReclaimMasterIO()
+    activate EPS
+    
+    alt _ioCommand == DbIoGlossary.IoCommands.Read
+        EPS -> IO : ReadReclaimMaster(_reclaimMaster.UserRoad, _reclaimMaster.ReclaimCode, _reclaimMaster.ReclaimCodeExt)
+        activate IO
+        IO --> EPS : reclaimMaster
+        deactivate IO
+        EPS -> EPS : _isEndOfFile = (reclaimMaster == null)
+        EPS -> EPS : _fileStatus = _isEndOfFile ? DbIoGlossary.FileStatus.EndOfFile : DbIoGlossary.FileStatus.StatusOk
+    else _ioCommand == DbIoGlossary.IoCommands.ReadNext
+        EPS -> IO : ReadNextReclaimMaster(_reclaimMaster.UserRoad)
+        activate IO
+        IO --> EPS : reclaimMaster
+        deactivate IO
+        EPS -> EPS : _isEndOfFile = (reclaimMaster == null)
+        EPS -> EPS : _fileStatus = _isEndOfFile ? DbIoGlossary.FileStatus.EndOfFile : DbIoGlossary.FileStatus.StatusOk
+    else
+        EPS -> Log : LogWarning("Unsupported I/O command for Reclaim Master: " + _ioCommand)
+        activate Log
+        Log --> EPS
+        deactivate Log
+        EPS -> EPS : _fileStatus = DbIoGlossary.FileStatus.NotFound
+    end
+    
+    deactivate EPS
+    
+else fileType == EquipmentMovementHistoryFile
+    EPS -> EPS : PerformEquipmentMovementHistoryIO()
+    activate EPS
+    
+    alt _ioCommand == DbIoGlossary.IoCommands.Read
+        EPS -> IO : ReadEquipmentMovementHistory(_equipMovementHistory.UserRoad, _equipMovementHistory.TripControlNumber)
+        activate IO
+        IO --> EPS : equipMovementHistory
+        deactivate IO
+        EPS -> EPS : _isEndOfFile = (equipMovementHistory == null)
+        EPS -> EPS : _fileStatus = _isEndOfFile ? DbIoGlossary.FileStatus.EndOfFile : DbIoGlossary.FileStatus.StatusOk
+    else _ioCommand == DbIoGlossary.IoCommands.ReadNext
+        EPS -> IO : ReadNextEquipmentMovementHistory(_equipMovementHistory.UserRoad, _equipMovementHistory.TripControlNumber)
+        activate IO
+        IO --> EPS : equipMovementHistory
+        deactivate IO
+        EPS -> EPS : _isEndOfFile = (equipMovementHistory == null)
+        EPS -> EPS : _fileStatus = _isEndOfFile ? DbIoGlossary.FileStatus.EndOfFile : DbIoGlossary.FileStatus.StatusOk
+    else
+        EPS -> Log : LogWarning("Unsupported I/O command for Equipment Movement History: " + _ioCommand)
+        activate Log
+        Log --> EPS
+        deactivate Log
+        EPS -> EPS : _fileStatus = DbIoGlossary.FileStatus.NotFound
+    end
+    
+    deactivate EPS
+    
+else
+    EPS -> EPS : throw new ArgumentException("Unknown file type: " + fileType)
+end
+
+deactivate EPS
+
+@enduml

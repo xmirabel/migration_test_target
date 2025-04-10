@@ -1,0 +1,57 @@
+@startuml GetReclaimInfo Sequence
+
+title Séquence de la méthode GetReclaimInfo
+
+participant "EquipmentProcessingService" as EPS
+participant "IIoService" as IO
+
+activate EPS
+
+EPS -> EPS : _currentSection = "GetReclaimInfo"
+EPS -> EPS : Initialize _reclaimMaster
+EPS -> EPS : _reclaimMaster.UserRoad = _systemOptions.UserRoad
+EPS -> EPS : _reclaimMaster.ReclaimCode = _cycleHeader.ReclaimCode
+EPS -> EPS : _reclaimMaster.ReclaimCodeExt = _cycleHeader.ReclaimCodeExt
+
+EPS -> EPS : ReadReclaimMaster()
+activate EPS
+EPS -> EPS : _ioCommand = DbIoGlossary.IoCommands.ReadNext
+EPS -> EPS : PerformDatabaseIO(ReclaimMasterFile)
+activate EPS
+EPS -> IO : ReadNextReclaimMaster()
+IO --> EPS : reclaimMaster
+deactivate EPS
+deactivate EPS
+
+alt !_fileStatus.Equals(DbIoGlossary.FileStatus.StatusOk)
+    EPS -> EPS : _reclaimMaster = new ReclaimMaster()
+    EPS -> EPS : _fileStatus = string.Empty
+    EPS --> EPS : return
+end
+
+alt _reclaimMaster.ReclaimCode.CompareTo(_cycleHeader.ReclaimCode) > 0
+    EPS --> EPS : return
+end
+
+alt _reclaimMaster.ReclaimCode.Equals(_cycleHeader.ReclaimCode) && _reclaimMaster.ReclaimCodeExt.CompareTo(_cycleHeader.ReclaimCodeExt) > 0
+    EPS --> EPS : return
+end
+
+alt _reclaimMaster.EffectiveMonth.CompareTo(_systemOptions.ServiceMonth) > 0
+    EPS -> EPS : _reclaimMaster = new ReclaimMaster()
+    EPS --> EPS : return
+end
+
+alt _reclaimMaster.ExpireMonth.CompareTo(_systemOptions.ServiceMonth) < 0
+    EPS -> EPS : ReadReclaimMaster()
+    activate EPS
+    EPS -> EPS : _ioCommand = DbIoGlossary.IoCommands.ReadNext
+    EPS -> EPS : PerformDatabaseIO(ReclaimMasterFile)
+    EPS -> IO : ReadNextReclaimMaster()
+    IO --> EPS : reclaimMaster
+    deactivate EPS
+end
+
+deactivate EPS
+
+@enduml

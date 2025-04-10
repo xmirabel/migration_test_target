@@ -1,0 +1,47 @@
+@startuml State Diagram
+
+title Diagramme d'État - Traitement des Réclamations
+
+[*] --> Initialisation : Démarrage du programme
+
+state Initialisation {
+  [*] --> ChargementOptions : Appel à GetSystemOptions()
+  ChargementOptions --> ValidationPhase : Vérification de la phase
+  ValidationPhase --> OuvertureFichiers : Phase valide
+  ValidationPhase --> [*] : Phase invalide
+  OuvertureFichiers --> InitialisationDonnées : Fichiers ouverts
+}
+
+Initialisation --> TraitementCycles : Housekeeping terminé
+
+state TraitementCycles {
+  [*] --> LectureCycle : Lecture du prochain cycle
+  LectureCycle --> AnalyseCycle : Cycle trouvé
+  LectureCycle --> FinTraitement : Fin de fichier
+  
+  state AnalyseCycle {
+    [*] --> RécupérationRéclamation : GetReclaimInfo()
+    RécupérationRéclamation --> DétectionTOL : DetectTolFailure()
+    DétectionTOL --> TraitementRéclamation : Traitement spécifique
+  }
+  
+  AnalyseCycle --> LectureCycle : Cycle suivant
+}
+
+TraitementCycles --> Finalisation : Tous les cycles traités
+
+state Finalisation {
+  [*] --> FermetureFichiers : CloseFiles()
+  FermetureFichiers --> MiseÀJourOptions : UpdateSystemOptions()
+  MiseÀJourOptions --> TraitementConditionnel : Vérification des conditions
+  
+  state TraitementConditionnel {
+    [*] --> [*]
+    [*] --> TraitementSecondaire : Si Phase 1 et TOL Participant
+    [*] --> TraitementCinquième : Si Phase 1 et MAX Reclaim
+  }
+}
+
+Finalisation --> [*] : Fin du programme
+
+@enduml

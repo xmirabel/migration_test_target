@@ -1,0 +1,50 @@
+@startuml Package Diagram
+
+title Diagramme de Paquetage - Système de Traitement des Équipements
+
+package "ChargingProcessingSystem" {
+  package "Services" {
+    [EquipmentProcessingService]
+    [IoService]
+    [UtilityService]
+    [LogService]
+  }
+  
+  package "Interfaces" {
+    [IIoService]
+    [IUtilityService]
+    [ILogService]
+  }
+  
+  package "Models" {
+    [SystemOptions]
+    [CycleHeader]
+    [EquipmentMovementHistory]
+    [EquipmentMovementEvent]
+    [ReclaimMaster]
+    [TripInfo]
+    [ProcessError]
+  }
+  
+  package "Constants" {
+    [GeneralGlossary]
+    [DbIoGlossary]
+  }
+  
+  package "Infrastructure" {
+    [DatabaseAccess]
+    [ErrorHandling]
+    [Logging]
+  }
+}
+
+[Services] --> [Interfaces]
+[Services] --> [Models]
+[Services] --> [Constants]
+[Services] --> [Infrastructure]
+
+[IoService] --> [DatabaseAccess]
+[LogService] --> [Logging]
+[EquipmentProcessingService] --> [ErrorHandling]
+
+@enduml

@@ -1,0 +1,56 @@
+@startuml PerformHousekeeping Activity
+
+title Diagramme d'Activité - PerformHousekeeping
+
+start
+
+:Définir la section courante comme "Housekeeping";
+:Initialiser les indicateurs de traitement;
+
+if (Phase 1 ou Phase 2?) then (oui)
+  :Continuer;
+else (non)
+  :Définir le commentaire d'abandon comme "Missing Phase";
+  :Abandonner le traitement;
+  stop
+endif
+
+:Initialiser les structures de données;
+:Définir le statut de fichier comme "NoIO";
+:Ouvrir les fichiers;
+:Initialiser les erreurs de traitement;
+:Configurer les champs clés;
+
+if (Phase 1?) then (oui)
+  :Initialiser le maître de réclamation;
+  :Définir la route utilisateur;
+  :Définir la commande d'E/S comme "ReadNext";
+  
+  while (Pas de fin de fichier et\nCode d'extension de réclamation != "MAX ") is (vrai)
+    :Effectuer l'E/S de base de données;
+  endwhile
+  
+  if (Fin de fichier?) then (oui)
+    :Définir le statut de fichier comme "  ";
+  else (non)
+    :Sauvegarder le code d'extension de réclamation;
+  endif
+endif
+
+:Initialiser le maître de réclamation;
+:Définir la route utilisateur;
+:Définir la commande d'E/S comme "ReadNext";
+:Effectuer l'E/S de base de données;
+
+if (Fin de fichier?) then (oui)
+  :Définir l'indicateur Go/NoGo comme "N";
+endif
+
+:Configurer l'en-tête de cycle et les informations de voyage;
+:Définir la commande d'E/S comme "ReadNext";
+:Effectuer l'E/S de base de données;
+:Initialiser le traitement de texte;
+
+stop
+
+@enduml

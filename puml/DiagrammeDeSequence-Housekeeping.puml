@@ -1,0 +1,90 @@
+@startuml Housekeeping Sequence
+
+title Séquence de la méthode PerformHousekeeping
+
+participant "EquipmentProcessingService" as EPS
+participant "IIoService" as IO
+participant "IUtilityService" as Util
+participant "ILogService" as Log
+
+activate EPS
+
+EPS -> EPS : _currentSection = "Housekeeping"
+EPS -> EPS : _utchprclm3Called = false
+EPS -> EPS : _utchp02Director = string.Empty
+
+alt _systemOptions.Phase != "1" && _systemOptions.Phase != "2"
+    EPS -> EPS : _abortComment = "Missing Phase"
+    EPS -> EPS : AbortProcessing()
+    activate EPS
+    EPS -> Log : LogError()
+    EPS -> EPS : throw new ApplicationException()
+    deactivate EPS
+end
+
+EPS -> EPS : InitializeDataStructures()
+activate EPS
+EPS -> EPS : Initialize all data structures
+deactivate EPS
+
+EPS -> EPS : _fileStatus = DbIoGlossary.FileStatus.NoIO
+EPS -> EPS : OpenFiles()
+activate EPS
+EPS -> IO : OpenCycleHeaderFile()
+EPS -> IO : OpenReclaimMasterFile()
+EPS -> IO : OpenEquipmentMovementHistoryFile()
+deactivate EPS
+
+EPS -> EPS : Initialize _processError and _prevProcessError
+EPS -> EPS : Set user road and other key fields
+
+alt _systemOptions.Phase == "1"
+    EPS -> EPS : Initialize _reclaimMaster
+    EPS -> EPS : _reclaimMaster.UserRoad = _systemOptions.UserRoad
+    EPS -> EPS : _ioCommand = DbIoGlossary.IoCommands.ReadNext
+    
+    loop until _isEndOfFile || _reclaimMaster.ReclaimCodeExt == "MAX "
+        EPS -> EPS : PerformDatabaseIO(ReclaimMasterFile)
+        activate EPS
+        EPS -> IO : ReadNextReclaimMaster()
+        IO --> EPS : reclaimMaster
+        deactivate EPS
+    end
+    
+    alt _isEndOfFile
+        EPS -> EPS : _fileStatus = "  "
+    else
+        EPS -> EPS : _d93ReclaimCodeExt = _reclaimMaster.ReclaimCodeExt
+    end
+end
+
+EPS -> EPS : Initialize _reclaimMaster
+EPS -> EPS : _reclaimMaster.UserRoad = _systemOptions.UserRoad
+EPS -> EPS : _ioCommand = DbIoGlossary.IoCommands.ReadNext
+EPS -> EPS : PerformDatabaseIO(ReclaimMasterFile)
+activate EPS
+EPS -> IO : ReadNextReclaimMaster()
+IO --> EPS : reclaimMaster
+deactivate EPS
+
+alt _isEndOfFile
+    EPS -> EPS : _d99GoNogoIndicator = "N"
+end
+
+EPS -> EPS : _cycleHeader.UserRoad = _systemOptions.UserRoad
+EPS -> EPS : _tripInfo.UserRoad = _systemOptions.UserRoad
+EPS -> EPS : _ioCommand = DbIoGlossary.IoCommands.ReadNext
+EPS -> EPS : PerformDatabaseIO(CycleHeaderFile)
+activate EPS
+EPS -> IO : ReadNextCycleHeader()
+IO --> EPS : cycleHeader
+deactivate EPS
+
+EPS -> Util : InitializeTextProcessing(_cycleHeader, _reclaimMaster, _systemOptions)
+activate Util
+Util --> EPS
+deactivate Util
+
+deactivate EPS
+
+@enduml

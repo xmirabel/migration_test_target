@@ -1,0 +1,29 @@
+@startuml Use Case Diagram
+
+title Diagramme de Cas d'Utilisation - Système de Traitement des Équipements
+
+left to right direction
+
+actor "Opérateur" as op
+actor "Système de Planification" as sched
+actor "Système de Facturation" as bill
+
+rectangle "Système de Traitement des Équipements" {
+  usecase "Traiter les Mouvements d'Équipement" as UC1
+  usecase "Gérer les Réclamations" as UC2
+  usecase "Détecter les Défaillances TOL" as UC3
+  usecase "Générer des Rapports" as UC4
+  usecase "Configurer les Options Système" as UC5
+}
+
+op --> UC1
+op --> UC5
+sched --> UC1
+sched --> UC2
+UC1 ..> UC3 : <<include>>
+UC2 ..> UC3 : <<include>>
+UC1 --> bill
+UC2 --> bill
+UC4 <-- op
+
+@enduml

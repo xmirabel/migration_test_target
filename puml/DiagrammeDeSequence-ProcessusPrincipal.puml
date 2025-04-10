@@ -1,0 +1,93 @@
+@startuml Main Process Sequence
+
+title Séquence du Processus Principal
+
+participant Client
+participant "EquipmentProcessingService" as EPS
+participant "IIoService" as IO
+participant "IUtilityService" as Util
+participant "ILogService" as Log
+
+Client -> EPS : ProcessEquipment(phase)
+activate EPS
+
+EPS -> IO : GetSystemOptions()
+activate IO
+IO --> EPS : systemOptions
+deactivate IO
+
+alt systemOptions.AbortedInProgram != empty
+    EPS --> Client : return
+end
+
+alt systemOptions.ModsEffectiveMonth != empty && systemOptions.ServiceMonth < systemOptions.ModsEffectiveMonth
+    EPS -> Util : SetRetrieveHistorical()
+    activate Util
+    Util --> EPS
+    deactivate Util
+else
+    EPS -> Util : SetRetrieveCurrent()
+    activate Util
+    Util --> EPS
+    deactivate Util
+end
+
+EPS -> Util : ClearErrors()
+activate Util
+Util --> EPS
+deactivate Util
+
+EPS -> Util : InitializeProcessing(systemOptions)
+activate Util
+Util --> EPS
+deactivate Util
+
+EPS -> EPS : PerformHousekeeping()
+activate EPS
+EPS -> EPS : OpenFiles()
+EPS -> EPS : InitializeDataStructures()
+EPS --> EPS
+deactivate EPS
+
+loop until _isEndOfFile
+    EPS -> EPS : ProcessingLoop()
+    activate EPS
+    EPS -> IO : ReadNextCycleHeader()
+    activate IO
+    IO --> EPS : cycleHeader
+    deactivate IO
+    EPS --> EPS
+    deactivate EPS
+end
+
+EPS -> EPS : CloseFiles()
+activate EPS
+EPS -> IO : CloseCycleHeaderFile()
+EPS -> IO : CloseReclaimMasterFile()
+EPS -> IO : CloseEquipmentMovementHistoryFile()
+EPS --> EPS
+deactivate EPS
+
+EPS -> IO : UpdateSystemOptions(systemOptions)
+activate IO
+IO --> EPS
+deactivate IO
+
+alt phase == "1" && systemOptions.IsTolParticipant && (systemOptions.IsVoluntaryTrip || systemOptions.IsEstimateTrip)
+    EPS -> Util : ProcessReclaimSecondary()
+    activate Util
+    Util --> EPS
+    deactivate Util
+end
+
+alt phase == "1" && _d93MaxReclaim
+    EPS -> Util : ProcessReclaimFifth()
+    activate Util
+    Util --> EPS
+    deactivate Util
+end
+
+EPS --> Client : return
+deactivate EPS
+
+@enduml

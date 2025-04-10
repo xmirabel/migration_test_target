@@ -1,6 +1,6 @@
 @startuml Component Diagram
 
-title Diagramme de Composants - Système de Traitement des Équipements
+title Diagramme de Composants - Systeme de Traitement des equipements
 
 package "ChargingProcessingSystem" {
   [EquipmentProcessingService] as EPS
@@ -23,12 +23,12 @@ EPS ..> IIO : utilise
 EPS ..> IUtil : utilise
 EPS ..> ILog : utilise
 
-IO -|> IIO : implémente
-Util -|> IUtil : implémente
-Log -|> ILog : implémente
+IO -u-|> IIO : implemente
+Util -u-|> IUtil : implemente
+Log -u-|> ILog : implemente
 
-IO --> CycleHeaderFile : accède
-IO --> ReclaimMasterFile : accède
-IO --> EquipmentMovementHistoryFile : accède
+IO --> CycleHeaderFile : accede
+IO --> ReclaimMasterFile : accede
+IO --> EquipmentMovementHistoryFile : accede
 
 @enduml

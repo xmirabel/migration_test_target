@@ -1,6 +1,6 @@
 @startuml Main Process Sequence
 
-title Séquence du Processus Principal
+title Sequence du Processus Principal
 
 participant Client
 participant "EquipmentProcessingService" as EPS
@@ -20,7 +20,7 @@ alt systemOptions.AbortedInProgram != empty
     EPS --> Client : return
 end
 
-alt systemOptions.ModsEffectiveMonth != empty && systemOptions.ServiceMonth < systemOptions.ModsEffectiveMonth
+alt systemOptions.ModsEffectiveMonth != empty\n&& systemOptions.ServiceMonth < systemOptions.ModsEffectiveMonth
     EPS -> Util : SetRetrieveHistorical()
     activate Util
     Util --> EPS
@@ -73,7 +73,7 @@ activate IO
 IO --> EPS
 deactivate IO
 
-alt phase == "1" && systemOptions.IsTolParticipant && (systemOptions.IsVoluntaryTrip || systemOptions.IsEstimateTrip)
+alt phase == "1" && systemOptions.IsTolParticipant\n&& (systemOptions.IsVoluntaryTrip || systemOptions.IsEstimateTrip)
     EPS -> Util : ProcessReclaimSecondary()
     activate Util
     Util --> EPS

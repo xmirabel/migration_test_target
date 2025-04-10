@@ -1,39 +1,39 @@
 @startuml ProcessEquipment Activity
 
-title Diagramme d'Activité - ProcessEquipment
+title Diagramme d'Activite - ProcessEquipment
 
 start
 
-:Récupérer les options système;
+:Recuperer les options systeme;
 
-if (Programme aborté précédemment?) then (oui)
+if (Programme aborte precedemment?) then (oui)
   stop
 endif
 
-if (Mois effectif des modifications défini et\nMois de service < Mois effectif des modifications?) then (oui)
-  :Configurer pour récupérer les données historiques;
+if (Mois effectif des modifications defini et\nMois de service < Mois effectif des modifications?) then (oui)
+  :Configurer pour recuperer les donnees historiques;
 else (non)
-  :Configurer pour récupérer les données actuelles;
+  :Configurer pour recuperer les donnees actuelles;
 endif
 
 :Effacer les erreurs;
 :Initialiser le traitement;
 
-:Exécuter Housekeeping;
+:Executer Housekeeping;
 
 while (Pas de fin de fichier?) is (oui)
-  :Exécuter la boucle de traitement;
+  :Executer la boucle de traitement;
 endwhile
 
 :Fermer les fichiers;
-:Mettre à jour les options système;
+:Mettre a jour les options systeme;
 
 if (Phase 1 et Participant TOL et\n(Voyage volontaire ou Estimation)) then (oui)
-  :Traiter les réclamations secondaires;
+  :Traiter les reclamations secondaires;
 endif
 
-if (Phase 1 et Réclamation MAX) then (oui)
-  :Traiter les réclamations cinquièmes;
+if (Phase 1 et Reclamation MAX) then (oui)
+  :Traiter les reclamations cinquiemes;
 endif
 
 stop

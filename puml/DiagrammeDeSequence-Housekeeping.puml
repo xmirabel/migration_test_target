@@ -1,6 +1,6 @@
 @startuml Housekeeping Sequence
 
-title Séquence de la méthode PerformHousekeeping
+title Sequence de la methode PerformHousekeeping
 
 participant "EquipmentProcessingService" as EPS
 participant "IIoService" as IO

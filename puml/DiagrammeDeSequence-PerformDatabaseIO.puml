@@ -1,6 +1,6 @@
 @startuml PerformDatabaseIO Sequence
 
-title Séquence de la méthode PerformDatabaseIO
+title Sequence de la methode PerformDatabaseIO
 
 participant "EquipmentProcessingService" as EPS
 participant "IIoService" as IO

@@ -1,6 +1,6 @@
 @startuml GetReclaimInfo Sequence
 
-title Séquence de la méthode GetReclaimInfo
+title Sequence de la methode GetReclaimInfo
 
 participant "EquipmentProcessingService" as EPS
 participant "IIoService" as IO
@@ -33,7 +33,7 @@ alt _reclaimMaster.ReclaimCode.CompareTo(_cycleHeader.ReclaimCode) > 0
     EPS --> EPS : return
 end
 
-alt _reclaimMaster.ReclaimCode.Equals(_cycleHeader.ReclaimCode) && _reclaimMaster.ReclaimCodeExt.CompareTo(_cycleHeader.ReclaimCodeExt) > 0
+alt _reclaimMaster.ReclaimCode.Equals(_cycleHeader.ReclaimCode)\n&& _reclaimMaster.ReclaimCodeExt.CompareTo(_cycleHeader.ReclaimCodeExt) > 0
     EPS --> EPS : return
 end
 

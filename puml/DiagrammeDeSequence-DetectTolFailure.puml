@@ -1,6 +1,6 @@
 @startuml DetectTolFailure Sequence
 
-title Séquence de la méthode DetectTolFailure
+title Sequence de la methode DetectTolFailure
 
 participant "EquipmentProcessingService" as EPS
 participant "IIoService" as IO
@@ -28,7 +28,7 @@ IO --> EPS : equipMovementHistory
 deactivate EPS
 
 alt !string.IsNullOrEmpty(_cycleHeader.ReclaimCodeExt) && _cycleHeader.IsReload
-    loop !_isEndOfFile && _equipMovementHistory.TripControlNumber == _d95TripControlNumber && !(_equipMovementHistory.IsTolRule5Receivable && _equipMovementHistory.IsDelivery)
+    loop !_isEndOfFile\n&& _equipMovementHistory.TripControlNumber == _d95TripControlNumber\n&& !(_equipMovementHistory.IsTolRule5Receivable && _equipMovementHistory.IsDelivery)
         EPS -> EPS : PerformDatabaseIO(EquipmentMovementHistoryFile)
         activate EPS
         EPS -> IO : ReadNextEquipmentMovementHistory()
@@ -36,7 +36,7 @@ alt !string.IsNullOrEmpty(_cycleHeader.ReclaimCodeExt) && _cycleHeader.IsReload
         deactivate EPS
     end
 else
-    loop !_isEndOfFile && _equipMovementHistory.TripControlNumber == _d95TripControlNumber && !_equipMovementHistory.IsTolRule5Receivable
+    loop !_isEndOfFile\n&& _equipMovementHistory.TripControlNumber == _d95TripControlNumber\n&& !_equipMovementHistory.IsTolRule5Receivable
         EPS -> EPS : PerformDatabaseIO(EquipmentMovementHistoryFile)
         activate EPS
         EPS -> IO : ReadNextEquipmentMovementHistory()
@@ -45,7 +45,7 @@ else
     end
 end
 
-alt _isEndOfFile || _equipMovementHistory.TripControlNumber != _d95TripControlNumber
+alt _isEndOfFile\n|| _equipMovementHistory.TripControlNumber != _d95TripControlNumber
     EPS -> EPS : HandleTolFailure()
     activate EPS
     EPS -> Log : LogWarning("TOL failure detected for trip " + _d95TripControlNumber)

@@ -1,6 +1,6 @@
 @startuml Class Diagram
 
-title Diagramme de Classes - Système de Traitement des Équipements
+title Diagramme de Classes - Systï¿½me de Traitement des ï¿½quipements
 
 class EquipmentProcessingService {
   -_savedEquipmentInitNumber: string
@@ -188,11 +188,11 @@ interface ILogService {
   +LogError(message: string): void
 }
 
-EquipmentProcessingService --> IIoService : utilise
-EquipmentProcessingService --> IUtilityService : utilise
-EquipmentProcessingService --> ILogService : utilise
+EquipmentProcessingService -u-> IIoService : utilise
+EquipmentProcessingService -u-> IUtilityService : utilise
+EquipmentProcessingService -l-> ILogService : utilise
 
-EquipmentProcessingService --> SystemOptions : utilise
+EquipmentProcessingService -r-> SystemOptions : utilise
 EquipmentProcessingService --> CycleHeader : utilise
 EquipmentProcessingService --> ReclaimMaster : utilise
 EquipmentProcessingService --> EquipmentMovementHistory : utilise
@@ -202,9 +202,12 @@ EquipmentProcessingService --> ProcessError : utilise
 
 GeneralGlossary --> ScreenStatus : contient
 GeneralGlossary --> LogicalViews : contient
+
 DbIoGlossary --> IoCommands : contient
 DbIoGlossary --> FileStatus : contient
 DbIoGlossary --> ReturnStatus : contient
 DbIoGlossary --> SwitchValues : contient
 
+CycleHeader -d[#transparent]- GeneralGlossary
+GeneralGlossary -r[#transparent]- DbIoGlossary
 @enduml

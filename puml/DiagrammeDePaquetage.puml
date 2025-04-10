@@ -1,6 +1,6 @@
 @startuml Package Diagram
 
-title Diagramme de Paquetage - Système de Traitement des Équipements
+title Diagramme de Paquetage - Systeme de Traitement des equipements
 
 package "ChargingProcessingSystem" {
   package "Services" {

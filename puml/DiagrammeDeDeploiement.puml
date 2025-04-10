@@ -1,6 +1,6 @@
 @startuml Deployment Diagram
 
-title Diagramme de Déploiement - Système de Traitement des Équipements
+title Diagramme de Deploiement - Systeme de Traitement des equipements
 
 node "Serveur d'Application" {
   artifact "ChargingProcessingSystem.dll" as appDll
@@ -8,9 +8,9 @@ node "Serveur d'Application" {
   artifact "Microsoft.Extensions.Logging.dll" as logDll
 }
 
-node "Serveur de Base de Données" {
+node "Serveur de Base de Donnees" {
   database "SQL Server" {
-    [Tables de Données]
+    [Tables de Donnees]
   }
 }
 
@@ -28,8 +28,8 @@ node "Poste Client" {
 }
 
 [Interface Utilisateur] ..> appDll : appelle via API
-appDll ..> [Tables de Données] : accède
+appDll ..> [Tables de Donnees] : accede
 appDll ..> [appsettings.json] : lit
-appDll ..> [logs] : écrit
+appDll ..> [logs] : ecrit
 
 @enduml

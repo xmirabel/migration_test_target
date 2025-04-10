@@ -1,44 +1,44 @@
 @startuml State Diagram
 
-title Diagramme d'État - Traitement des Réclamations
+title Diagramme d'etat - Traitement des Reclamations
 
-[*] --> Initialisation : Démarrage du programme
+[*] --> Initialisation : Demarrage du programme
 
 state Initialisation {
-  [*] --> ChargementOptions : Appel à GetSystemOptions()
-  ChargementOptions --> ValidationPhase : Vérification de la phase
+  [*] --> ChargementOptions : Appel a GetSystemOptions()
+  ChargementOptions --> ValidationPhase : Verification de la phase
   ValidationPhase --> OuvertureFichiers : Phase valide
   ValidationPhase --> [*] : Phase invalide
-  OuvertureFichiers --> InitialisationDonnées : Fichiers ouverts
+  OuvertureFichiers --> InitialisationDonnees : Fichiers ouverts
 }
 
-Initialisation --> TraitementCycles : Housekeeping terminé
+Initialisation --> TraitementCycles : Housekeeping termine
 
 state TraitementCycles {
   [*] --> LectureCycle : Lecture du prochain cycle
-  LectureCycle --> AnalyseCycle : Cycle trouvé
+  LectureCycle --> AnalyseCycle : Cycle trouve
   LectureCycle --> FinTraitement : Fin de fichier
   
   state AnalyseCycle {
-    [*] --> RécupérationRéclamation : GetReclaimInfo()
-    RécupérationRéclamation --> DétectionTOL : DetectTolFailure()
-    DétectionTOL --> TraitementRéclamation : Traitement spécifique
+    [*] --> RecuperationReclamation : GetReclaimInfo()
+    RecuperationReclamation --> DetectionTOL : DetectTolFailure()
+    DetectionTOL --> TraitementReclamation : Traitement specifique
   }
   
   AnalyseCycle --> LectureCycle : Cycle suivant
 }
 
-TraitementCycles --> Finalisation : Tous les cycles traités
+TraitementCycles --> Finalisation : Tous les cycles traites
 
 state Finalisation {
   [*] --> FermetureFichiers : CloseFiles()
-  FermetureFichiers --> MiseÀJourOptions : UpdateSystemOptions()
-  MiseÀJourOptions --> TraitementConditionnel : Vérification des conditions
+  FermetureFichiers --> MiseeJourOptions : UpdateSystemOptions()
+  MiseeJourOptions --> TraitementConditionnel : Verification des conditions
   
   state TraitementConditionnel {
     [*] --> [*]
     [*] --> TraitementSecondaire : Si Phase 1 et TOL Participant
-    [*] --> TraitementCinquième : Si Phase 1 et MAX Reclaim
+    [*] --> TraitementCinquieme : Si Phase 1 et MAX Reclaim
   }
 }
 
